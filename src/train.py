@@ -5,9 +5,10 @@ from torch.utils.data import DataLoader
 
 # 전처리
 transform_data = transforms.Compose([
-    transforms.Resize((255, 255)),
+    transforms.Resize((224, 224)), # 입력 크기 변경 255 -> 224
     transforms.ToTensor(), # to Tensor
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225])
 ])
 
 train_dataset = datasets.ImageFolder(root="../dataset/train", transform=transform_data)
@@ -24,7 +25,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.0005)
+optimizer = optim.Adam(model.parameters(), lr=0.0001) # 0.0005 -> 0.0001
 
 # loop
 epochs = 10
@@ -59,7 +60,7 @@ for epoch in range(epochs):
 
     val_sum += correct/len(val_dataset)
 
-    print(f"[case {epoch + 1}] "
+    print(f"[Epoch{epoch + 1}] "
           f"훈련(train) 오차: {train_loss/len(train_loader):.4f}, "
           f"검증(val) 오차: {val_loss/len(val_loader):.4f}, "
           f"정확도: {correct/len(val_dataset):.2%}")
