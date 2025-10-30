@@ -1,14 +1,19 @@
 # ⚙️ Plastic Sorting AI
-> 플라스틱 이미지 AI 분류
+> 플라스틱 이미지 분류 AI  
+> 2025.10.28. ~ 
 
-# 🛠️ 스택
+<br>
+
+## 🛠️ 스택
 - 언어 : Python 3.9
 - 라이브러리 : PyTorch, TorchVision, PIL
 - 모델 : ResNet18
 - 데이터 처리 : ImageFolder, transforms
 - 환경 : MacBook(Apple M4) / IntelliJ
 
-# 🗂️ 데이터 셋
+<br>
+
+## 🗂️ 데이터 셋
 dataset/  
 ├─ train/  
 │   ├─ PLASTIC/  
@@ -18,7 +23,9 @@ dataset/
 └─ NON_PLASTIC/  
 - icrawler로 Google Image 수집 후 라벨링
 
-# 📈 학습 결과
+<br>
+
+## 📈 학습 결과
 ## 1. 프로토타입 모델
 ### 🔍 스펙
 - 모델: ResNet18 (pretrained=True)
@@ -29,3 +36,5 @@ dataset/
 
 ### 📚 결과
 ![img.png](img/img.png)
+
+<br>
