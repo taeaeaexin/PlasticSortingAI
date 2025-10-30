@@ -27,13 +27,13 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.0005)
 
 # loop
-cases = 10
+epochs = 10
 val_sum = 0
 
-for case in range(cases):
+for epoch in range(epochs):
+    # train
     model.train()
-
-    running_loss = 0.0
+    train_loss = 0.0
     for imgs, labels in train_loader:
         imgs, labels = imgs.to(device), labels.to(device)
 
@@ -43,7 +43,7 @@ for case in range(cases):
         loss.backward()
         optimizer.step()
 
-        running_loss += loss.item()
+        train_loss += loss.item()
 
     # val
     model.eval()
@@ -59,11 +59,11 @@ for case in range(cases):
 
     val_sum += correct/len(val_dataset)
 
-    print(f"[case {case+1}] "
-          f"훈련(train) 오차: {running_loss/len(train_loader):.4f}, "
+    print(f"[case {epoch + 1}] "
+          f"훈련(train) 오차: {train_loss/len(train_loader):.4f}, "
           f"검증(val) 오차: {val_loss/len(val_loader):.4f}, "
           f"정확도: {correct/len(val_dataset):.2%}")
 
 torch.save(model.state_dict(), "../model/plasticSortingAI.pth")
 
-print(f"평균 정확도 : {val_sum/cases:.2%}")
+print(f"평균 정확도 : {val_sum / epochs:.2%}")
