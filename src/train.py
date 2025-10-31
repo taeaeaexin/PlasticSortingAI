@@ -1,10 +1,12 @@
 import torch
 import time
 from torch import nn, optim # 신경망 래퍼, 옵티마이저
-from torchvision import datasets, transforms, models # 이미지 머신 러닝
-from torch.utils.data import DataLoader
+from torchvision import datasets, transforms, models # 이미지 데이터 셋, 전처리, 모델
+from torch.utils.data import DataLoader # 배치 단위 데이터 로딩
 
-# 전처리 train (데이터 증강)
+# 1. 데이터 전처리
+
+# train : 데이터 전처리 + 증강
 transform_train = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(),          # 좌우 반전
@@ -15,7 +17,7 @@ transform_train = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
-# 전처리 val
+# val : 검증 데이터
 transform_val = transforms.Compose([
     transforms.Resize((224, 224)), # 입력 크기 변경 255 -> 224
     transforms.ToTensor(), # to Tensor
@@ -23,30 +25,34 @@ transform_val = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
+# 2. 데이터 셋 구성
 train_dataset = datasets.ImageFolder(root="../dataset/train", transform=transform_train)
 val_dataset = datasets.ImageFolder(root="../dataset/val", transform=transform_val)
 
 train_loader = DataLoader(train_dataset, batch_size=6, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=6, shuffle=False)
 
-# ResNet18
+# 3. ResNet18 기반 모델 구성
 model = models.resnet18(pretrained=True)
 model.fc = nn.Sequential(
     nn.Dropout(0.3),
     nn.Linear(model.fc.in_features, 2)
 )
 
+# 4. 하드웨어 Apple GPU: mps
 device = torch.device("mps" if torch.mps.is_available() else "cpu") # cuda -> mps (Apple GPU)
 model = model.to(device)
 
+# 5. loss 계산 및 옵티마이저 설정
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.00005) # 0.0005 -> 0.0001
 
-# test start
+# 6. 변수 세팅 (에폭, 정확도, 시간)
 epochs = 10
 val_sum = 0
 start_time = time.time()
 
+# 7. 학습 loop
 for epoch in range(epochs):
     # train
     model.train()
@@ -81,6 +87,7 @@ for epoch in range(epochs):
           f"검증(val) 오차: {val_loss/len(val_loader):.4f}, "
           f"정확도: {correct/len(val_dataset):.2%}")
 
+# 8. 학습 결과 저장
 torch.save(model.state_dict(), "../model/plasticSortingAI.pth")
 
 end_time = time.time()
