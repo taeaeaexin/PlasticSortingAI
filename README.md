@@ -25,7 +25,6 @@ dataset/
 └─ val/  
 ├─ PLASTIC/  
 └─ NON_PLASTIC/  
-- icrawler로 Google Image 수집 후 라벨링
 
 <br>
 
@@ -37,6 +36,8 @@ dataset/
 | V2 | 데이터 증강 추가                    |  91.09%  | 65.92 sec |
 | V3 | GPU(MPS) + Dropout           |  90.87%  | 22.49 sec |
 
+<br>
+
 ## 🔍 상세
 ### 프로토타입
 - 모델: ResNet18 (pretrained=True)
@@ -44,6 +45,7 @@ dataset/
 - 정규화: mean/std = [0.5, 0.5, 0.5]
 - 옵티마이저: Adam(lr=0.0005)
 - 에폭: 10
+
 ![img.png](img/img.png)
 
 <br>
@@ -52,12 +54,14 @@ dataset/
 - 입력 크기: 255×255 -> 244x244
 - 정규화: mean/std = [0.5, 0.5, 0.5] -> [0.485, 0.456, 0.406]/[0.229, 0.224, 0.225]
 - 옵티마이저: Adam(lr=0.0005) -> 0.0001
+
 ![img.png](img/img1.png)
 
 <br>
 
 ### V2 (학습 데이터 증강)
 - 데이터 증강(train 데이터 변형)
+
 ![img_5.png](img/img_5.png)
 
 <br>
@@ -66,4 +70,5 @@ dataset/
 - cpu -> mps
 - nn.Dropout(0.3) 추가
 - 옵티마이저: Adam(lr=0.00005)
+
 ![img_7.png](img/img_7.png)
