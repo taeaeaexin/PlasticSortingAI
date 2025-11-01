@@ -28,13 +28,14 @@ dataset/
 <br>
 
 ## 📈 기록
-| 버전 |  평균 정확도  |   학습 시간   | 주요 변경 사항             |
-|-----------|:------:|:---------:|------------------------|
-| Prototype | 84.78% | 65.92 sec | 기본 모델                |
-| 1.0.0     | 90.87% | 22.49 sec | 데이터 증강, GPU, Dropout |
+| 버전 |  평균 정확도  |   학습 시간   | 주요 변경 사항             | 상세      |
+|-----------|:------:|:---------:|------------------------|----------|
+| Prototype | 84.78% | 65.92 sec | 기본 모델                | [이동](https://github.com/taeaeaexin/PlasticSortingAI/wiki/Prototype) |
+| 1.0.0     | 90.87% | 22.49 sec | 데이터 증강, GPU, Dropout | [이동](https://github.com/taeaeaexin/PlasticSortingAI/wiki/1.0.0) |
 
 <br>
 
+<!--
 ## 🔍 상세
 ### 프로토타입
 - 모델: ResNet18 (pretrained=True)
@@ -69,3 +70,4 @@ dataset/
 - 옵티마이저: Adam(lr=0.00005)
 
 ![img_7.png](img/img_7.png)
+ -->
