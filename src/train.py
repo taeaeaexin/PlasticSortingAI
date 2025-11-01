@@ -1,8 +1,12 @@
 import torch
 import time
+import sys
 from torch import nn, optim # 신경망 래퍼, 옵티마이저
 from torchvision import datasets, transforms, models # 이미지 데이터 셋, 전처리, 모델
 from torch.utils.data import DataLoader # 배치 단위 데이터 로딩
+
+# 빠른 출력
+print = sys.stdout.write
 
 # 1. 데이터 전처리
 
