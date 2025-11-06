@@ -5,6 +5,7 @@ from torch import nn, optim # 신경망 래퍼, 옵티마이저
 from torchvision import datasets, transforms, models # 이미지 데이터 셋, 전처리, 모델
 from torchvision.models import ResNet18_Weights
 from torch.utils.data import DataLoader # 배치 단위 데이터 로딩
+import matplotlib.pyplot as plt
 
 # 빠른 입출력
 input = sys.stdin.readline
@@ -36,6 +37,7 @@ transform_val = transforms.Compose([
 train_dataset = datasets.ImageFolder(root="../dataset/train", transform=transform_train)
 val_dataset = datasets.ImageFolder(root="../dataset/val", transform=transform_val)
 
+# 셔플을 통해 학습 순서 무작위
 train_loader = DataLoader(train_dataset, batch_size=6, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=6, shuffle=False)
 
@@ -52,12 +54,14 @@ model = model.to(device)
 
 # 5. loss 계산 및 옵티마이저 설정
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.00005) # 0.0005 -> 0.0001
+optimizer = optim.Adam(model.parameters(), lr=0.00005)
 
 # 6. 변수 세팅 (에폭, 정확도, 시간)
 epochs = 10
 val_sum = 0
 start_time = time.time()
+
+train_losses, val_losses, val_accs = [], [], []
 
 # 7. 학습 loop
 best_acc = 0.0
@@ -91,10 +95,14 @@ for epoch in range(epochs):
     val_acc = correct / len(val_dataset)
     val_sum += val_acc
 
+    train_losses.append(train_loss / len(train_loader))
+    val_losses.append(val_loss / len(val_loader))
+    val_accs.append(val_acc)
+
     if val_acc > best_acc:
-        best_acc = val_acc
-        torch.save(model.state_dict(), "../model/best_model.pth")
-        print(f"최고 정확도 갱신: {best_acc:.2%}")
+            best_acc = val_acc
+            torch.save(model.state_dict(), "../model/best_model.pth")
+            print(f"최고 정확도 갱신: {best_acc:.2%}")
 
     print(f"[Epoch{epoch + 1}] "
           f"훈련(train) 오차: {train_loss/len(train_loader):.4f}, "
@@ -107,3 +115,28 @@ torch.save(model.state_dict(), "../model/plasticSortingAI.pth")
 
 end_time = time.time()
 print(f"평균 정확도: {val_sum / epochs:.2%} / 최고 정확도 : {best_acc:.2%} / 소요 시간: {end_time - start_time:.2f}초", flush=True)
+
+
+# 9. 학습 결과 시각화
+plt.figure(figsize=(10, 4))
+
+# 손실 그래프
+plt.subplot(1, 2, 1)
+plt.plot(range(1, epochs + 1), train_losses, label='Train Loss')
+plt.plot(range(1, epochs + 1), val_losses, label='Val Loss')
+plt.title('Loss per Epoch')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+
+# 정확도 그래프
+plt.subplot(1, 2, 2)
+plt.plot(range(1, epochs + 1), val_accs, marker='o', label='Val Accuracy')
+plt.title('Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.tight_layout()
+plt.savefig("../result/training_curve.png")
+plt.show()
