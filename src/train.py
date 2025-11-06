@@ -14,6 +14,7 @@ input = sys.stdin.readline
 # train : 데이터 전처리 + 증강
 transform_train = transforms.Compose([
     transforms.Resize((224, 224)),
+    transforms.Lambda(lambda img: img.convert("RGB")),  # 투명/팔레트 이미지를 3채널 RGB로 통일 (PIL 경고 제거)
     transforms.RandomHorizontalFlip(),          # 좌우 반전
     transforms.RandomRotation(10),              # +-10도 회전
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),  # 색감 변화
@@ -25,6 +26,7 @@ transform_train = transforms.Compose([
 # val : 검증 데이터
 transform_val = transforms.Compose([
     transforms.Resize((224, 224)), # 입력 크기 변경 255 -> 224
+    transforms.Lambda(lambda img: img.convert("RGB")),  # 투명/팔레트 이미지를 3채널 RGB로 통일 (PIL 경고 제거)
     transforms.ToTensor(), # to Tensor
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                          std=[0.229, 0.224, 0.225])
@@ -58,6 +60,7 @@ val_sum = 0
 start_time = time.time()
 
 # 7. 학습 loop
+best_acc = 0.0
 for epoch in range(epochs):
     # train
     model.train()
@@ -85,15 +88,22 @@ for epoch in range(epochs):
             preds = outputs.argmax(1)
             correct += (preds == labels).sum().item()
 
-    val_sum += correct/len(val_dataset)
+    val_acc = correct / len(val_dataset)
+    val_sum += val_acc
+
+    if val_acc > best_acc:
+        best_acc = val_acc
+        torch.save(model.state_dict(), "../model/best_model.pth")
+        print(f"최고 정확도 갱신: {best_acc:.2%}")
 
     print(f"[Epoch{epoch + 1}] "
           f"훈련(train) 오차: {train_loss/len(train_loader):.4f}, "
           f"검증(val) 오차: {val_loss/len(val_loader):.4f}, "
-          f"정확도: {correct/len(val_dataset):.2%}")
+          f"정확도: {val_acc:.2%}")
 
 # 8. 학습 결과 저장
+print()
 torch.save(model.state_dict(), "../model/plasticSortingAI.pth")
 
 end_time = time.time()
-print(f"평균 정확도: {val_sum / epochs:.2%} / 소요 시간: {end_time - start_time:.2f}초\n")
+print(f"평균 정확도: {val_sum / epochs:.2%} / 최고 정확도 : {best_acc:.2%} / 소요 시간: {end_time - start_time:.2f}초", flush=True)
