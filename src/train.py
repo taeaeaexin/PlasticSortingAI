@@ -3,10 +3,11 @@ import time
 import sys
 from torch import nn, optim # 신경망 래퍼, 옵티마이저
 from torchvision import datasets, transforms, models # 이미지 데이터 셋, 전처리, 모델
+from torchvision.models import ResNet18_Weights
 from torch.utils.data import DataLoader # 배치 단위 데이터 로딩
 
-# 빠른 출력
-print = sys.stdout.write
+# 빠른 입출력
+input = sys.stdin.readline
 
 # 1. 데이터 전처리
 
@@ -37,7 +38,7 @@ train_loader = DataLoader(train_dataset, batch_size=6, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=6, shuffle=False)
 
 # 3. ResNet18 기반 모델 구성
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
 model.fc = nn.Sequential(
     nn.Dropout(0.3),
     nn.Linear(model.fc.in_features, 2)
@@ -95,4 +96,4 @@ for epoch in range(epochs):
 torch.save(model.state_dict(), "../model/plasticSortingAI.pth")
 
 end_time = time.time()
-print(f"평균 정확도: {val_sum / epochs:.2%} / 소요 시간: {end_time - start_time:.2f}초")
+print(f"평균 정확도: {val_sum / epochs:.2%} / 소요 시간: {end_time - start_time:.2f}초\n")
